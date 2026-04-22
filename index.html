@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Desk Of Hooks</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --cream:#FDF6EE;--warm:#F5E6D0;--terracotta:#C4724A;--sage:#7A9E7E;--dusty:#E8D5C4;
+    --dark:#2C1810;--mid:#6B4C3B;--light-text:#9B7B6B;--white:#FFFFFF;
+    --font-display:'DM Serif Display',serif;
+    --font-text:'DM Serif Text',serif;
+    --font-body:'DM Sans',sans-serif;
+  }
+  body{font-family:var(--font-body);background:var(--cream);color:var(--dark);min-height:100vh;overflow-x:hidden}
+
+  nav{background:var(--white);border-bottom:2px solid var(--dusty);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:64px}
+  .nav-logo{font-family:var(--font-display);font-size:1.6rem;color:var(--terracotta);font-style:italic;cursor:pointer}
+  .nav-logo span{font-size:.7rem;display:block;color:var(--light-text);font-family:var(--font-body);font-style:normal;letter-spacing:3px;text-transform:uppercase;margin-top:-4px}
+  .nav-links{display:flex;gap:2rem;list-style:none}
+  .nav-links a{text-decoration:none;color:var(--mid);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;transition:.2s;cursor:pointer;font-family:var(--font-body)}
+  .nav-links a:hover{color:var(--terracotta)}
+  .nav-actions{display:flex;gap:1rem;align-items:center}
+  .cart-btn{background:var(--terracotta);color:white;border:none;padding:.5rem 1.25rem;border-radius:2px;cursor:pointer;font-family:var(--font-body);font-size:.8rem;letter-spacing:1px;text-transform:uppercase;position:relative}
+  .cart-badge{background:var(--dark);color:white;border-radius:50%;width:18px;height:18px;font-size:.65rem;display:inline-flex;align-items:center;justify-content:center;margin-left:.4rem}
+
+  .page{display:none;min-height:calc(100vh - 64px)}
+  .page.active{display:block}
+
+  .hero{background:linear-gradient(135deg,var(--warm) 0%,var(--dusty) 100%);padding:5rem 2rem;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-50px;right:-50px;width:300px;height:300px;background:var(--terracotta);opacity:.07;border-radius:50%}
+  .hero::after{content:'';position:absolute;bottom:-80px;left:-30px;width:250px;height:250px;background:var(--sage);opacity:.08;border-radius:50%}
+  .hero-tag{display:inline-block;background:var(--sage);color:white;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;padding:.35rem 1rem;border-radius:2px;margin-bottom:1.5rem;font-family:var(--font-body)}
+  .hero h1{font-family:var(--font-display);font-size:3.8rem;color:var(--dark);line-height:1.1;margin-bottom:1rem}
+  .hero h1 em{color:var(--terracotta)}
+  .hero p{color:var(--mid);max-width:500px;margin:0 auto 2rem;line-height:1.8;font-size:1.05rem;font-family:var(--font-text)}
+  .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+  .btn-primary{background:var(--terracotta);color:white;border:none;padding:.85rem 2.5rem;border-radius:2px;cursor:pointer;font-family:var(--font-body);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;transition:.2s}
+  .btn-primary:hover{background:var(--mid)}
+  .btn-outline{background:transparent;color:var(--terracotta);border:2px solid var(--terracotta);padding:.85rem 2.5rem;border-radius:2px;cursor:pointer;font-family:var(--font-body);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;transition:.2s}
+  .btn-outline:hover{background:var(--terracotta);color:white}
+
+  .section{padding:4rem 2rem}
+  .section-title{font-family:var(--font-display);font-size:2.2rem;color:var(--dark);text-align:center;margin-bottom:.5rem}
+  .section-sub{color:var(--light-text);text-align:center;margin-bottom:3rem;letter-spacing:1px;font-size:.82rem;text-transform:uppercase;font-family:var(--font-body)}
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;max-width:900px;margin:0 auto}
+  .cat-card{background:var(--white);border:1.5px solid var(--dusty);border-radius:4px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:.2s}
+  .cat-card:hover{border-color:var(--terracotta);transform:translateY(-3px)}
+  .cat-icon{font-size:2.2rem;margin-bottom:.75rem}
+  .cat-name{font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--mid);font-weight:700;font-family:var(--font-body)}
+
+  .shop-header{background:var(--warm);padding:3rem 2rem;text-align:center;border-bottom:2px solid var(--dusty)}
+  .filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;padding:1.5rem 2rem;border-bottom:1px solid var(--dusty);background:var(--white)}
+  .filter-btn{padding:.4rem 1.25rem;border:1.5px solid var(--dusty);background:transparent;color:var(--mid);border-radius:2px;cursor:pointer;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;transition:.2s;font-family:var(--font-body)}
+  .filter-btn.active,.filter-btn:hover{background:var(--terracotta);border-color:var(--terracotta);color:white}
+  .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;padding:2rem;max-width:1200px;margin:0 auto}
+  .product-card{background:var(--white);border:1.5px solid var(--dusty);border-radius:4px;overflow:hidden;cursor:pointer;transition:.2s}
+  .product-card:hover{border-color:var(--terracotta);transform:translateY(-2px)}
+  .product-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:4rem;background:var(--warm)}
+  .product-info{padding:1rem}
+  .product-cat{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--sage);margin-bottom:.25rem;font-family:var(--font-body)}
+  .product-name{font-family:var(--font-text);font-size:1.05rem;color:var(--dark);margin-bottom:.5rem}
+  .product-price{color:var(--terracotta);font-weight:700;font-size:1rem;font-family:var(--font-display)}
+  .product-add{width:100%;background:var(--dark);color:white;border:none;padding:.6rem;cursor:pointer;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;font-family:var(--font-body);transition:.2s;margin-top:.75rem}
+  .product-add:hover{background:var(--terracotta)}
+
+  .cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200}
+  .cart-overlay.open{display:block}
+  .cart-panel{position:fixed;right:0;top:0;height:100%;width:380px;background:var(--white);z-index:201;padding:2rem;overflow-y:auto;transform:translateX(100%);transition:.3s}
+  .cart-panel.open{transform:translateX(0)}
+  .cart-panel h2{font-family:var(--font-display);font-size:1.8rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--dusty)}
+  .cart-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--dusty);align-items:center}
+  .cart-item-emoji{font-size:2rem;min-width:50px;text-align:center;background:var(--warm);padding:.5rem;border-radius:4px}
+  .cart-item-info{flex:1}
+  .cart-item-name{font-size:.9rem;font-family:var(--font-text);color:var(--dark);margin-bottom:.2rem}
+  .cart-item-price{color:var(--terracotta);font-size:.85rem;font-family:var(--font-body)}
+  .cart-remove{background:none;border:none;color:var(--light-text);cursor:pointer;font-size:1.1rem}
+  .cart-total{margin-top:1.5rem;padding-top:1rem;border-top:2px solid var(--dusty);font-family:var(--font-display);font-size:1.4rem;text-align:right;color:var(--dark)}
+  .checkout-btn{width:100%;background:var(--terracotta);color:white;border:none;padding:1rem;cursor:pointer;font-family:var(--font-body);font-size:.85rem;letter-spacing:2px;text-transform:uppercase;margin-top:1rem;border-radius:2px}
+  .close-cart{background:none;border:none;font-size:1.5rem;cursor:pointer;float:right;color:var(--mid)}
+
+  .admin-login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--dark)}
+  .login-box{background:var(--white);padding:3rem;border-radius:4px;width:360px;text-align:center}
+  .login-box h2{font-family:var(--font-display);font-size:2rem;color:var(--dark);margin-bottom:.25rem}
+  .login-box p{color:var(--light-text);font-size:.85rem;margin-bottom:2rem;font-family:var(--font-text);font-style:italic}
+  .form-group{text-align:left;margin-bottom:1.25rem}
+  .form-group label{display:block;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:.4rem;font-family:var(--font-body)}
+  .form-group input{width:100%;padding:.75rem;border:1.5px solid var(--dusty);border-radius:2px;font-family:var(--font-body);font-size:.9rem;outline:none;transition:.2s}
+  .form-group input:focus{border-color:var(--terracotta)}
+  .login-btn{width:100%;background:var(--terracotta);color:white;border:none;padding:.85rem;cursor:pointer;font-family:var(--font-body);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;border-radius:2px;margin-top:.5rem}
+  .login-err{background:#fef2f2;color:#c0392b;padding:.75rem;border-radius:2px;font-size:.8rem;margin-bottom:1rem;display:none;font-family:var(--font-body)}
+
+  .admin-layout{display:flex;min-height:calc(100vh - 64px)}
+  .admin-sidebar{width:220px;background:var(--dark);padding:1.5rem 0;flex-shrink:0;position:relative}
+  .admin-sidebar h3{color:var(--dusty);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;padding:.5rem 1.5rem;margin-bottom:.5rem;font-family:var(--font-body)}
+  .admin-nav-item{display:block;padding:.7rem 1.5rem;color:var(--dusty);opacity:.7;cursor:pointer;font-size:.84rem;transition:.2s;border-left:3px solid transparent;font-family:var(--font-body)}
+  .admin-nav-item:hover,.admin-nav-item.active{opacity:1;background:rgba(255,255,255,.06);border-left-color:var(--terracotta)}
+  .admin-content{flex:1;padding:2rem;overflow-y:auto}
+  .admin-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+  .admin-top h2{font-family:var(--font-display);font-size:1.9rem;color:var(--dark)}
+  .btn-sm{padding:.5rem 1.25rem;background:var(--terracotta);color:white;border:none;border-radius:2px;cursor:pointer;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;font-family:var(--font-body)}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+  .stat-card{background:var(--white);border:1.5px solid var(--dusty);border-radius:4px;padding:1.25rem;text-align:center}
+  .stat-num{font-family:var(--font-display);font-size:2.2rem;color:var(--terracotta);margin-bottom:.25rem}
+  .stat-label{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--light-text);font-family:var(--font-body)}
+
+  .admin-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:4px;overflow:hidden;border:1.5px solid var(--dusty)}
+  .admin-table th{background:var(--warm);padding:.75rem 1rem;text-align:left;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--mid);border-bottom:1.5px solid var(--dusty);font-family:var(--font-body)}
+  .admin-table td{padding:.75rem 1rem;border-bottom:1px solid var(--dusty);font-size:.85rem;color:var(--dark);font-family:var(--font-body)}
+  .admin-table tr:last-child td{border-bottom:none}
+  .admin-table tr:hover td{background:var(--cream)}
+  .tag{display:inline-block;padding:.2rem .6rem;border-radius:2px;font-size:.68rem;text-transform:uppercase;letter-spacing:1px;font-family:var(--font-body)}
+  .tag-approved{background:#e8f5e9;color:#2e7d32}
+  .tag-pending{background:#fff8e1;color:#f57f17}
+  .tag-hidden{background:#fce4ec;color:#c62828}
+  .action-btn{padding:.3rem .75rem;border:1.5px solid var(--dusty);background:transparent;border-radius:2px;cursor:pointer;font-size:.72rem;font-family:var(--font-body);color:var(--mid);margin-right:.3rem;transition:.2s}
+  .action-btn:hover{border-color:var(--terracotta);color:var(--terracotta)}
+  .action-btn.danger:hover{border-color:#e74c3c;color:#e74c3c}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--white);border-radius:4px;padding:2rem;width:480px;max-height:90vh;overflow-y:auto}
+  .modal h3{font-family:var(--font-display);font-size:1.6rem;margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:2px solid var(--dusty)}
+  .modal-actions{display:flex;gap:1rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--dusty)}
+  .btn-cancel{padding:.6rem 1.5rem;background:transparent;border:1.5px solid var(--dusty);border-radius:2px;cursor:pointer;font-size:.8rem;font-family:var(--font-body)}
+  .btn-save{padding:.6rem 1.5rem;background:var(--terracotta);color:white;border:none;border-radius:2px;cursor:pointer;font-size:.8rem;font-family:var(--font-body)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+  .chart-bars{display:flex;gap:.5rem;align-items:flex-end;height:150px;padding:0 .5rem}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem}
+  .bar{background:var(--terracotta);border-radius:2px 2px 0 0;width:100%;transition:.4s;opacity:.85}
+  .bar-val{font-size:.68rem;color:var(--mid);font-weight:700;font-family:var(--font-body)}
+
+  .about-strip{background:var(--dark);color:var(--dusty);padding:3rem 2rem;text-align:center}
+  .about-strip h2{font-family:var(--font-display);font-size:2.4rem;color:var(--warm);margin-bottom:1rem}
+  .about-strip p{max-width:600px;margin:0 auto;opacity:.8;line-height:1.9;font-family:var(--font-text);font-size:1rem}
+  footer{background:var(--mid);color:var(--dusty);padding:1.5rem 2rem;text-align:center;font-size:.8rem;opacity:.9;font-family:var(--font-body)}
+  footer a{color:var(--warm);text-decoration:none}
+
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--dark);color:white;padding:1rem 1.5rem;border-radius:4px;font-size:.85rem;z-index:400;transform:translateY(100px);transition:.3s;opacity:0;font-family:var(--font-body)}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast-success{border-left:4px solid var(--sage)}
+  .stars{color:var(--terracotta);font-size:1.1rem;letter-spacing:2px}
+  .empty-state{text-align:center;padding:4rem 2rem;color:var(--light-text);font-family:var(--font-text)}
+  .empty-state .big{font-size:3rem;margin-bottom:1rem}
+  .chart-card{background:var(--white);border:1.5px solid var(--dusty);border-radius:4px;padding:1.5rem;margin-bottom:1.5rem}
+  .chart-card h4{font-family:var(--font-display);font-size:1.2rem;margin-bottom:1.25rem;color:var(--dark)}
+  .search-bar{display:flex;gap:.5rem;padding:1rem 2rem;background:var(--white);border-bottom:1px solid var(--dusty)}
+  .search-bar input{flex:1;padding:.6rem 1rem;border:1.5px solid var(--dusty);border-radius:2px;font-family:var(--font-body);outline:none;max-width:400px}
+  .search-bar input:focus{border-color:var(--terracotta)}
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">
+    The Desk Of Hooks
+    <span>Handcrafted Kroshay</span>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')">Home</a></li>
+    <li><a onclick="showPage('shop')">Shop</a></li>
+    <li><a onclick="showPage('about')">About</a></li>
+    <li><a onclick="showPage('admin-login')" style="color:var(--sage)">Admin</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="cart-btn" onclick="toggleCart()">🛒 Cart<span class="cart-badge" id="cart-count">0</span></button>
+  </div>
+</nav>
+
+<!-- CART -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cart-panel">
+  <button class="close-cart" onclick="toggleCart()">✕</button>
+  <h2>Your Cart</h2>
+  <div id="cart-items-list"></div>
+  <div class="cart-total" id="cart-total" style="display:none"></div>
+  <button class="checkout-btn" id="checkout-btn" style="display:none" onclick="checkout()">Proceed to Checkout</button>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">🧶 Handmade with love</div>
+    <h1>Crafted by Hook,<br>Made with <em>Heart</em></h1>
+    <p>Discover one-of-a-kind kroshay creations — bags, clothing, accessories, keychains, toys, and home décor all lovingly crafted by hand.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('shop')">Shop Now</button>
+      <button class="btn-outline" onclick="showPage('about')">Our Story</button>
+    </div>
+  </div>
+  <div class="section" style="background:var(--white)">
+    <div class="section-title">Shop by Category</div>
+    <div class="section-sub">What are you looking for?</div>
+    <div class="cat-grid">
+      <div class="cat-card" onclick="filterAndShop('Bags')"><div class="cat-icon">👜</div><div class="cat-name">Bags</div></div>
+      <div class="cat-card" onclick="filterAndShop('Clothing')"><div class="cat-icon">🧥</div><div class="cat-name">Clothing</div></div>
+      <div class="cat-card" onclick="filterAndShop('Accessories')"><div class="cat-icon">💎</div><div class="cat-name">Accessories</div></div>
+      <div class="cat-card" onclick="filterAndShop('Keychains')"><div class="cat-icon">🔑</div><div class="cat-name">Keychains</div></div>
+      <div class="cat-card" onclick="filterAndShop('Toys')"><div class="cat-icon">🧸</div><div class="cat-name">Toys</div></div>
+      <div class="cat-card" onclick="filterAndShop('Decor')"><div class="cat-icon">🌿</div><div class="cat-name">Decor</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Featured Pieces</div>
+    <div class="section-sub">Handpicked for you</div>
+    <div class="products-grid" id="featured-grid"></div>
+  </div>
+  <div class="about-strip">
+    <div style="font-size:2.5rem;margin-bottom:1rem">🧶</div>
+    <h2>The Desk Of Hooks</h2>
+    <p>Every stitch tells a story. Our kroshay creations are made with care, creativity, and a deep love for the craft. Based in India, shipping love worldwide.</p>
+    <br><small style="opacity:.5;font-family:var(--font-body)">www.thedeskofhooks.in</small>
+  </div>
+  <footer>&copy; 2025 The Desk Of Hooks &middot; <a href="https://www.thedeskofhooks.in">www.thedeskofhooks.in</a> &middot; Handmade in India with 🧶</footer>
+</div>
+
+<!-- SHOP PAGE -->
+<div class="page" id="page-shop">
+  <div class="shop-header">
+    <div class="section-title" style="margin-bottom:.5rem">Shop All Products</div>
+    <div class="section-sub" style="margin-bottom:0">Handcrafted kroshay creations</div>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search products..." oninput="filterProducts()">
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Bags',this)">Bags</button>
+    <button class="filter-btn" onclick="setFilter('Clothing',this)">Clothing</button>
+    <button class="filter-btn" onclick="setFilter('Accessories',this)">Accessories</button>
+    <button class="filter-btn" onclick="setFilter('Keychains',this)">Keychains</button>
+    <button class="filter-btn" onclick="setFilter('Toys',this)">Toys</button>
+    <button class="filter-btn" onclick="setFilter('Decor',this)">Decor</button>
+  </div>
+  <div class="products-grid" id="shop-grid"></div>
+  <footer style="margin-top:2rem">&copy; 2025 The Desk Of Hooks &middot; Handmade in India 🧶</footer>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="hero" style="padding:4rem 2rem">
+    <div class="hero-tag">🧶 Our Story</div>
+    <h1>Born from <em>Passion</em></h1>
+    <p>The Desk Of Hooks began as a humble corner with yarn, hooks, and a dream — to bring the warmth of handmade things into every home.</p>
+  </div>
+  <div class="section" style="background:var(--white);max-width:700px;margin:0 auto">
+    <div class="section-title" style="text-align:left">What is Kroshay?</div>
+    <p style="color:var(--mid);line-height:1.9;margin-bottom:1.5rem;font-family:var(--font-text);font-size:1rem">Kroshay (from the French "crochet") is the ancient art of creating fabric by interlocking loops of yarn using a hook. Each piece is 100% handmade — no machines, no shortcuts — just skill, patience, and creativity.</p>
+    <p style="color:var(--mid);line-height:1.9;margin-bottom:1.5rem;font-family:var(--font-text);font-size:1rem">At The Desk Of Hooks, every item you see has been crafted by hand, stitch by stitch. This means no two pieces are exactly alike — you're getting something truly unique.</p>
+    <div style="background:var(--warm);border-left:4px solid var(--terracotta);padding:1.5rem;border-radius:0 4px 4px 0;margin:2rem 0">
+      <p style="font-family:var(--font-display);font-size:1.2rem;color:var(--dark);font-style:italic">"Every loop is a little act of love. We pour our heart into every stitch."</p>
+    </div>
+  </div>
+  <footer style="margin-top:2rem">&copy; 2025 The Desk Of Hooks &middot; www.thedeskofhooks.in</footer>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="page" id="page-admin-login">
+  <div class="admin-login">
+    <div class="login-box">
+      <div style="font-size:2.5rem;margin-bottom:1rem">🧶</div>
+      <h2>Admin Portal</h2>
+      <p>The Desk Of Hooks &middot; Staff Access</p>
+      <div class="login-err" id="login-err">Invalid credentials. Please try again.</div>
+      <div class="form-group"><label>Username</label><input type="text" id="admin-user" placeholder="Enter username"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="admin-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+      <button class="login-btn" onclick="adminLogin()">Login to Dashboard</button>
+      <p style="margin-top:1.5rem;font-size:.75rem;color:var(--light-text);cursor:pointer;font-family:var(--font-body)" onclick="showPage('home')">← Back to store</p>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="page" id="page-admin">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <h3>Dashboard</h3>
+      <div class="admin-nav-item active" onclick="adminNav('overview',this)">📊 Overview</div>
+      <div class="admin-nav-item" onclick="adminNav('products',this)">📦 Products</div>
+      <div class="admin-nav-item" onclick="adminNav('reviews',this)">⭐ Reviews</div>
+      <div class="admin-nav-item" onclick="adminNav('sales',this)">📈 Sales Insights</div>
+      <div style="padding:1rem 1.5rem;margin-top:2rem">
+        <div style="color:var(--dusty);opacity:.5;font-size:.72rem;margin-bottom:.5rem;font-family:var(--font-body)">Logged in as Dhvani</div>
+        <div class="admin-nav-item" style="padding:.5rem 0;border-left:none" onclick="adminLogout()">🚪 Logout</div>
+      </div>
+    </div>
+    <div class="admin-content">
+      <!-- OVERVIEW -->
+      <div id="admin-overview">
+        <div class="admin-top">
+          <h2>Welcome back, Dhvani 👋</h2>
+          <span style="font-size:.8rem;color:var(--light-text);font-family:var(--font-body)">The Desk Of Hooks &middot; Admin</span>
+        </div>
+        <div class="stats-grid" id="overview-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div class="chart-card"><h4>Monthly Sales (₹)</h4><div class="chart-bars" id="overview-chart"></div><div style="display:flex;gap:.5rem;margin-top:.5rem" id="overview-chart-labels"></div></div>
+          <div class="chart-card"><h4>Category Breakdown</h4><div id="cat-breakdown"></div></div>
+        </div>
+        <div class="chart-card" style="margin-top:1.5rem"><h4>Recent Orders</h4>
+          <table class="admin-table"><thead><tr><th>Order</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recent-orders-body"></tbody></table>
+        </div>
+      </div>
+      <!-- PRODUCTS -->
+      <div id="admin-products" style="display:none">
+        <div class="admin-top"><h2>Products</h2><button class="btn-sm" onclick="openProductModal()">+ Add Product</button></div>
+        <table class="admin-table"><thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead><tbody id="admin-products-body"></tbody></table>
+      </div>
+      <!-- REVIEWS -->
+      <div id="admin-reviews" style="display:none">
+        <div class="admin-top"><h2>Customer Reviews</h2></div>
+        <table class="admin-table"><thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admin-reviews-body"></tbody></table>
+      </div>
+      <!-- SALES -->
+      <div id="admin-sales" style="display:none">
+        <div class="admin-top"><h2>Sales Insights</h2></div>
+        <div class="stats-grid" id="sales-stats"></div>
+        <div class="chart-card"><h4>Revenue by Month (₹)</h4><div class="chart-bars" id="sales-chart"></div><div style="display:flex;gap:.5rem;margin-top:.5rem" id="sales-chart-labels"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem">
+          <div class="chart-card"><h4>Top Selling Products</h4><div id="top-products-list"></div></div>
+          <div class="chart-card"><h4>Sales by Category</h4><div id="sales-by-cat"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <h3 id="modal-title">Add New Product</h3>
+    <input type="hidden" id="edit-product-id">
+    <div class="form-group"><label>Product Name</label><input type="text" id="p-name" placeholder="e.g. Bohemian Tote Bag"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label>
+        <select id="p-cat" style="width:100%;padding:.75rem;border:1.5px solid var(--dusty);border-radius:2px;font-family:var(--font-body);outline:none">
+          <option>Bags</option><option>Clothing</option><option>Accessories</option><option>Keychains</option><option>Toys</option><option>Decor</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Price (₹)</label><input type="number" id="p-price" placeholder="e.g. 450"></div>
+    </div>
+    <div class="form-group"><label>Emoji Icon</label><input type="text" id="p-emoji" placeholder="e.g. 👜"></div>
+    <div class="form-group"><label>Description</label><input type="text" id="p-desc" placeholder="Short product description"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeProductModal()">Cancel</button>
+      <button class="btn-save" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast toast-success" id="toast"></div>
+
+<script>
+let products=[
+  {id:1,name:'Bohemian Tote Bag',cat:'Bags',price:650,emoji:'👜',desc:'Spacious hand-crocheted tote in earthy tones'},
+  {id:2,name:'Sunset Clutch',cat:'Bags',price:480,emoji:'👝',desc:'Compact evening clutch with tassel detail'},
+  {id:3,name:'Floral Crop Top',cat:'Clothing',price:890,emoji:'🌸',desc:'Breezy crochet crop top with floral motif'},
+  {id:4,name:'Beach Cover-Up',cat:'Clothing',price:1200,emoji:'🧵',desc:'Elegant open-weave beach cover-up'},
+  {id:5,name:'Pearl Hairband',cat:'Accessories',price:280,emoji:'💍',desc:'Delicate crochet hairband with pearl accent'},
+  {id:6,name:'Boho Bracelet Set',cat:'Accessories',price:350,emoji:'📿',desc:'Set of 3 woven bracelets in pastel shades'},
+  {id:7,name:'Mushroom Keychain',cat:'Keychains',price:150,emoji:'🍄',desc:'Adorable amigurumi mushroom keychain'},
+  {id:8,name:'Sunflower Keychain',cat:'Keychains',price:150,emoji:'🌻',desc:'Bright yellow sunflower charm keychain'},
+  {id:9,name:'Amigurumi Bunny',cat:'Toys',price:550,emoji:'🐰',desc:'Soft crocheted bunny toy, perfect gift'},
+  {id:10,name:'Crochet Elephant',cat:'Toys',price:600,emoji:'🐘',desc:'Chunky elephant stuffie with embroidered eyes'},
+  {id:11,name:'Macramé Wall Hanging',cat:'Decor',price:950,emoji:'🌿',desc:'Bohemian wall art in natural cotton rope'},
+  {id:12,name:'Plant Pot Hanger',cat:'Decor',price:380,emoji:'🪴',desc:'Handwoven hanging planter for small pots'},
+];
+let reviews=[
+  {id:1,customer:'Priya S.',product:'Bohemian Tote Bag',rating:5,text:'Absolutely love it! Quality is exceptional.',status:'approved'},
+  {id:2,customer:'Meera K.',product:'Amigurumi Bunny',rating:5,text:'My daughter is obsessed with this bunny!',status:'approved'},
+  {id:3,customer:'Riya P.',product:'Floral Crop Top',rating:4,text:'Very pretty, ships well packed.',status:'pending'},
+  {id:4,customer:'Ananya T.',product:'Mushroom Keychain',rating:5,text:'So cute and great quality!',status:'pending'},
+  {id:5,customer:'Divya M.',product:'Pearl Hairband',rating:3,text:'Nice but slightly loose fit.',status:'hidden'},
+];
+let orders=[
+  {id:'#1021',item:'Bohemian Tote Bag',amount:'₹650',status:'Delivered'},
+  {id:'#1020',item:'Amigurumi Bunny',amount:'₹550',status:'Shipped'},
+  {id:'#1019',item:'Floral Crop Top',amount:'₹890',status:'Processing'},
+  {id:'#1018',item:'Pearl Hairband',amount:'₹280',status:'Delivered'},
+  {id:'#1017',item:'Mushroom Keychain',amount:'₹150',status:'Delivered'},
+];
+let cart=[];
+let currentFilter='All';
+let nextId=13;
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(name==='home')renderFeatured();
+  if(name==='shop')renderShop();
+  if(name==='admin')renderAdmin();
+  window.scrollTo(0,0);
+}
+function filterAndShop(cat){
+  currentFilter=cat;showPage('shop');
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent===cat));
+}
+function catEmoji(cat){return{Bags:'👜',Clothing:'🧥',Accessories:'💎',Keychains:'🔑',Toys:'🧸',Decor:'🌿'}[cat]||'🧶'}
+function renderFeatured(){
+  document.getElementById('featured-grid').innerHTML=products.slice(0,6).map(p=>productCard(p)).join('');
+}
+function productCard(p){return`<div class="product-card">
+  <div class="product-img">${p.emoji||catEmoji(p.cat)}</div>
+  <div class="product-info">
+    <div class="product-cat">${p.cat}</div>
+    <div class="product-name">${p.name}</div>
+    <div style="font-size:.8rem;color:var(--light-text);margin-bottom:.25rem;font-family:var(--font-body)">${p.desc||''}</div>
+    <div class="product-price">&#8377;${p.price}</div>
+    <button class="product-add" onclick="addToCart(${p.id})">Add to Cart</button>
+  </div></div>`}
+function renderShop(){
+  const q=(document.getElementById('search-input')||{}).value||'';
+  let filtered=products.filter(p=>(currentFilter==='All'||p.cat===currentFilter)&&(p.name.toLowerCase().includes(q.toLowerCase())||p.cat.toLowerCase().includes(q.toLowerCase())));
+  document.getElementById('shop-grid').innerHTML=filtered.length?filtered.map(p=>productCard(p)).join(''):'<div class="empty-state" style="grid-column:1/-1"><div class="big">🧶</div><p>No products found.</p></div>';
+}
+function setFilter(cat,btn){currentFilter=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderShop();}
+function filterProducts(){renderShop();}
+function addToCart(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const ex=cart.find(x=>x.id===id);if(ex)ex.qty++;else cart.push({...p,qty:1});
+  updateCartUI();showToast(p.name+' added to cart!');
+}
+function updateCartUI(){
+  const total=cart.reduce((a,b)=>a+b.qty,0);
+  document.getElementById('cart-count').textContent=total;
+  const list=document.getElementById('cart-items-list');
+  if(!cart.length){list.innerHTML='<div class="empty-state"><div class="big">🛒</div><p>Your cart is empty</p></div>';document.getElementById('cart-total').style.display='none';document.getElementById('checkout-btn').style.display='none';return;}
+  list.innerHTML=cart.map(item=>'<div class="cart-item"><div class="cart-item-emoji">'+(item.emoji||catEmoji(item.cat))+'</div><div class="cart-item-info"><div class="cart-item-name">'+item.name+'</div><div class="cart-item-price">&#8377;'+item.price+' \xd7 '+item.qty+'</div></div><button class="cart-remove" onclick="removeFromCart('+item.id+')">&#x2715;</button></div>').join('');
+  const sum=cart.reduce((a,b)=>a+b.price*b.qty,0);
+  document.getElementById('cart-total').style.display='block';
+  document.getElementById('cart-total').innerHTML='Total: &#8377;'+sum;
+  document.getElementById('checkout-btn').style.display='block';
+}
+function removeFromCart(id){cart=cart.filter(x=>x.id!==id);updateCartUI();}
+function toggleCart(){document.getElementById('cart-panel').classList.toggle('open');document.getElementById('cart-overlay').classList.toggle('open');updateCartUI();}
+function checkout(){showToast('Thank you for your order! (Demo mode)');cart=[];updateCartUI();toggleCart();}
+function adminLogin(){
+  const u=document.getElementById('admin-user').value,p=document.getElementById('admin-pass').value;
+  document.getElementById('login-err').style.display='none';
+  if(u==='Dhvani'&&p==='Dhvani@123'){showPage('admin');adminNav('overview',null);}
+  else document.getElementById('login-err').style.display='block';
+}
+function adminLogout(){showPage('home');document.getElementById('admin-user').value='';document.getElementById('admin-pass').value='';}
+function adminNav(section,el){
+  ['overview','products','reviews','sales'].forEach(s=>document.getElementById('admin-'+s).style.display=s===section?'block':'none');
+  document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(section==='overview')renderOverview();
+  if(section==='products')renderAdminProducts();
+  if(section==='reviews')renderAdminReviews();
+  if(section==='sales')renderSales();
+}
+function renderOverview(){
+  document.getElementById('overview-stats').innerHTML=
+    '<div class="stat-card"><div class="stat-num">'+products.length+'</div><div class="stat-label">Products</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+orders.length+'</div><div class="stat-label">Orders</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+reviews.filter(r=>r.status==='pending').length+'</div><div class="stat-label">Pending Reviews</div></div>'+
+    '<div class="stat-card"><div class="stat-num">&#8377;12,450</div><div class="stat-label">This Month</div></div>';
+  const months=['Jan','Feb','Mar','Apr','May','Jun'],vals=[4200,6800,5500,8900,11200,12450],max=Math.max(...vals);
+  document.getElementById('overview-chart').innerHTML=vals.map(v=>'<div class="bar-wrap"><div class="bar-val">&#8377;'+(v/1000).toFixed(1)+'k</div><div class="bar" style="height:'+(v/max*120)+'px"></div></div>').join('');
+  document.getElementById('overview-chart-labels').innerHTML=months.map(m=>'<div style="flex:1;text-align:center;font-size:.65rem;color:var(--light-text);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-body)">'+m+'</div>').join('');
+  const cats=['Bags','Clothing','Accessories','Keychains','Toys','Decor'],catVals=[35,25,15,10,10,5];
+  document.getElementById('cat-breakdown').innerHTML=cats.map((c,i)=>'<div style="margin-bottom:.75rem"><div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.25rem;font-family:var(--font-body)"><span>'+c+'</span><span style="color:var(--terracotta);font-weight:700">'+catVals[i]+'%</span></div><div style="height:6px;background:var(--dusty);border-radius:3px"><div style="height:6px;background:var(--terracotta);border-radius:3px;width:'+catVals[i]+'%"></div></div></div>').join('');
+  document.getElementById('recent-orders-body').innerHTML=orders.map(o=>'<tr><td style="font-weight:700">'+o.id+'</td><td>'+o.item+'</td><td style="color:var(--terracotta)">'+o.amount+'</td><td><span class="tag '+(o.status==='Delivered'?'tag-approved':o.status==='Processing'?'tag-pending':'tag-hidden')+'">'+o.status+'</span></td></tr>').join('');
+}
+function renderAdminProducts(){
+  document.getElementById('admin-products-body').innerHTML=products.map(p=>'<tr><td><span style="margin-right:.5rem">'+(p.emoji||catEmoji(p.cat))+'</span>'+p.name+'</td><td><span class="tag tag-approved">'+p.cat+'</span></td><td style="color:var(--terracotta);font-weight:700">&#8377;'+p.price+'</td><td><button class="action-btn" onclick="openProductModal('+p.id+')">Edit</button><button class="action-btn danger" onclick="deleteProduct('+p.id+')">Delete</button></td></tr>').join('');
+}
+function renderAdminReviews(){
+  const stars=n=>'&#9733;'.repeat(n)+'&#9734;'.repeat(5-n);
+  document.getElementById('admin-reviews-body').innerHTML=reviews.map(r=>'<tr><td>'+r.customer+'</td><td>'+r.product+'</td><td><span class="stars">'+stars(r.rating)+'</span></td><td style="max-width:180px;font-size:.8rem">'+r.text+'</td><td><span class="tag '+(r.status==='approved'?'tag-approved':r.status==='pending'?'tag-pending':'tag-hidden')+'">'+r.status+'</span></td><td>'+(r.status!=='approved'?'<button class="action-btn" onclick="setReviewStatus('+r.id+',\'approved\')">Approve</button>':'')+' '+(r.status!=='hidden'?'<button class="action-btn danger" onclick="setReviewStatus('+r.id+',\'hidden\')">Hide</button>':'')+'<button class="action-btn danger" onclick="deleteReview('+r.id+')">Delete</button></td></tr>').join('');
+}
+function setReviewStatus(id,status){const r=reviews.find(x=>x.id===id);if(r){r.status=status;renderAdminReviews();showToast('Review updated!');}}
+function deleteReview(id){reviews=reviews.filter(x=>x.id!==id);renderAdminReviews();showToast('Review deleted.');}
+function renderSales(){
+  document.getElementById('sales-stats').innerHTML=
+    '<div class="stat-card"><div class="stat-num">&#8377;49,050</div><div class="stat-label">Total Revenue</div></div>'+
+    '<div class="stat-card"><div class="stat-num">63</div><div class="stat-label">Total Orders</div></div>'+
+    '<div class="stat-card"><div class="stat-num">&#8377;778</div><div class="stat-label">Avg Order Value</div></div>'+
+    '<div class="stat-card"><div class="stat-num">94%</div><div class="stat-label">Satisfaction Rate</div></div>';
+  const months=['Jan','Feb','Mar','Apr','May','Jun'],vals=[4200,6800,5500,8900,11200,12450],max=Math.max(...vals);
+  document.getElementById('sales-chart').innerHTML=vals.map(v=>'<div class="bar-wrap"><div class="bar-val">&#8377;'+(v/1000).toFixed(1)+'k</div><div class="bar" style="height:'+(v/max*120)+'px"></div></div>').join('');
+  document.getElementById('sales-chart-labels').innerHTML=months.map(m=>'<div style="flex:1;text-align:center;font-size:.65rem;color:var(--light-text);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-body)">'+m+'</div>').join('');
+  const topProds=[{name:'Floral Crop Top',sales:18,rev:'&#8377;16,020'},{name:'Bohemian Tote Bag',sales:15,rev:'&#8377;9,750'},{name:'Amigurumi Bunny',sales:12,rev:'&#8377;6,600'},{name:'Macram\xe9 Wall Hanging',sales:8,rev:'&#8377;7,600'},{name:'Mushroom Keychain',sales:22,rev:'&#8377;3,300'}];
+  document.getElementById('top-products-list').innerHTML=topProds.map((p,i)=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--dusty);font-family:var(--font-body)"><div><span style="color:var(--light-text);font-size:.75rem;margin-right:.5rem">#'+(i+1)+'</span>'+p.name+'</div><div style="text-align:right"><div style="color:var(--terracotta);font-weight:700;font-size:.85rem">'+p.rev+'</div><div style="font-size:.7rem;color:var(--light-text)">'+p.sales+' sold</div></div></div>').join('');
+  const byCat=[{cat:'Clothing',pct:38},{cat:'Bags',pct:26},{cat:'Decor',pct:15},{cat:'Toys',pct:11},{cat:'Accessories',pct:7},{cat:'Keychains',pct:3}];
+  document.getElementById('sales-by-cat').innerHTML=byCat.map(c=>'<div style="margin-bottom:.75rem"><div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.3rem;font-family:var(--font-body)"><span>'+c.cat+'</span><span style="color:var(--terracotta);font-weight:700">'+c.pct+'%</span></div><div style="height:8px;background:var(--dusty);border-radius:4px"><div style="height:8px;background:var(--sage);border-radius:4px;width:'+c.pct+'%"></div></div></div>').join('');
+}
+function renderAdmin(){renderOverview();}
+function openProductModal(id){
+  document.getElementById('product-modal').classList.add('open');
+  document.getElementById('edit-product-id').value='';
+  if(id){
+    const p=products.find(x=>x.id===id);
+    document.getElementById('modal-title').textContent='Edit Product';
+    document.getElementById('edit-product-id').value=id;
+    document.getElementById('p-name').value=p.name;
+    document.getElementById('p-cat').value=p.cat;
+    document.getElementById('p-price').value=p.price;
+    document.getElementById('p-emoji').value=p.emoji||'';
+    document.getElementById('p-desc').value=p.desc||'';
+  } else {
+    document.getElementById('modal-title').textContent='Add New Product';
+    ['p-name','p-price','p-emoji','p-desc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('p-cat').value='Bags';
+  }
+}
+function closeProductModal(){document.getElementById('product-modal').classList.remove('open');}
+function saveProduct(){
+  const name=document.getElementById('p-name').value.trim(),cat=document.getElementById('p-cat').value,price=parseInt(document.getElementById('p-price').value),emoji=document.getElementById('p-emoji').value.trim(),desc=document.getElementById('p-desc').value.trim();
+  if(!name||!price){showToast('Please fill in name and price!');return;}
+  const editId=document.getElementById('edit-product-id').value;
+  if(editId){const p=products.find(x=>x.id==editId);if(p){p.name=name;p.cat=cat;p.price=price;p.emoji=emoji;p.desc=desc;}showToast('Product updated!');}
+  else{products.push({id:nextId++,name,cat,price,emoji:emoji||catEmoji(cat),desc});showToast('Product added!');}
+  closeProductModal();renderAdminProducts();
+}
+function deleteProduct(id){if(confirm('Delete this product?')){products=products.filter(x=>x.id!==id);renderAdminProducts();showToast('Product deleted.');}}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+renderFeatured();updateCartUI();
+</script>
+</body>
+</html>
